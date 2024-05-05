@@ -507,7 +507,10 @@ public class SynchronizeDirWithVcsWorkingCopy
     }
     catch (ScriptException ex)
     {
-      ex.printStackTrace();
+			if (ex.getErrorCode() < 10)
+				System.out.println(ex);
+			else
+				ex.printStackTrace();
       System.exit(ex.getErrorCode());
     }
     catch (Throwable ex)
@@ -535,14 +538,10 @@ public class SynchronizeDirWithVcsWorkingCopy
       {
         switch (nextArg)
         {
-          case "-h", "--help" ->
-            action = Action.SHOW_HELP;
-          case "-d", "--dry-run" ->
-            action = Action.DRY_RUN;
-          case "-s", "--svn" ->
-            action = Action.SVN;
-          case "-g", "--git" ->
-            action = Action.GIT;
+          case "-h", "--help" 		-> action = Action.SHOW_HELP;
+          case "-d", "--dry-run" 	-> action = Action.DRY_RUN;
+          case "-s", "--svn" 			-> action = Action.SVN;
+          case "-g", "--git" 			-> action = Action.GIT;
           default ->
           {
             action = null;
@@ -648,17 +647,17 @@ public class SynchronizeDirWithVcsWorkingCopy
         vcs = new SystemCommandGit();
       }
       default ->
-        throw new ScriptException(28, "Unknown action specified!");
+        throw new ScriptException(6, "Unknown action specified!");
     }
     if (vcs != null)
     {
       if (!vcs.isDstDirUnderVersionControl())
       {
-        throw new ScriptException(24, "Destination directory is not under version control!");
+        throw new ScriptException(4, "Destination directory is not under version control!");
       }
       if (!vcs.isWorkingCopyClean())
       {
-        throw new ScriptException(25, "Working copy is not clean! Please commit or revert changes first.");
+        throw new ScriptException(5, "Working copy is not clean! Please commit or revert changes first.");
       }
       systemCommands.add(vcs);
     }
