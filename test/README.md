@@ -6,3 +6,13 @@ To display some usage help, run:
 
 `> SynchronizeDirWithVcsWorkingCopyTest.sh -h`
 
+ and also
+
+`> SynchronizeDirWithVcsWorkingCopyTest.sh -vgV`
+
+or
+
+`> SynchronizeDirWithVcsWorkingCopyTest.sh -vsV`
+
+respectively.
+
