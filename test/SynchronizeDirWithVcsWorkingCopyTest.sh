@@ -117,7 +117,7 @@ function show_usage
 	color -n orange 'USAGE: '
 	color gray "`basename $0` [options]"
 	echo '       Run the unit tests for '
-	color blue "       ${test_cmd}"
+	color blue "       ${vcs_cmd}"
 	echo
 	color orange 'OPTIONS:'
 	echo
@@ -186,7 +186,7 @@ function run_unit_tests_svn
 	color blue "· jar2     »${jar2}«"
 
 	pushd "${temp_dir}"
-	mkdir -vp src{1..2} exported{1..2} svn-repos working-copy
+	mkdir -vp {src,exported}{1..2} svn-repos working-copy
 
 	if [ ! -x "${vcs_cmd}" ] ; then
 		color red "Test command not found! Stop."
@@ -301,7 +301,7 @@ function run_unit_tests_git
 	color blue "· jar2     »${jar2}«"
 
 	pushd "${temp_dir}"
-	mkdir -vp src{1..2} exported{1..2} git-repos
+	mkdir -vp {src,exported}{1..2} git-repos
 
 	if [ ! -x "${vcs_cmd}" ] ; then
 		color red "Test command not found! Stop."
