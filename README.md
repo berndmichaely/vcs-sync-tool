@@ -1,10 +1,10 @@
 # vcs-sync-tool
 
-![Version 1.3](./doc/shields/vcs-sync-tool.svg "Version 1.3")
+![Version 1.4.0](./doc/shields/vcs-sync-tool.svg "Version 1.4.0")
 
 `SynchronizeDirWithVcsWorkingCopy` is a Java shebang script to synchronize a directory tree, which is under version control, with a new target state. Supported VCS are Subversion and Git.
 
-The `<destination-directory>` contains a content under version control, and the `<source-directory>` contains a new version of the content. The script will update the `<destination-directory>` content from the `<source-directory>` using version control commands. Empty source directories are ignored.
+The `<destination-directory>` contains a content under version control, and the `<source-directory>` contains a new version of the content. The script will update the `<destination-directory>` content from the `<source-directory>` using version control commands. The `<destination-directory>` must be clean, otherwise the script refuses to overwrite. Empty source directories are ignored.
 
 The `test` subdirectory contains unit tests as a bash script.
 
@@ -29,3 +29,7 @@ which will show:
             -                       : stop parsing options
             <source-directory>      : new content
             <destination-directory> : existing VCS working copy
+
+### Screenshot:
+
+![Screenshot 1](./doc/screenshots/Screenshot_1.png "Screenshot 1")

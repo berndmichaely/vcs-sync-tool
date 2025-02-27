@@ -1,6 +1,6 @@
 //#!/usr/bin/java --source 17
 
-// last updated: 2024-07-29
+// last updated: 2025-02-27
 
 /*
  * Copyright 2024 Bernd Michaely (info@bernd-michaely.de).
@@ -52,7 +52,8 @@ import static java.util.function.Predicate.not;
 public class SynchronizeDirWithVcsWorkingCopy
 {
 	public static final int VERSION_MAJOR = 1;
-	public static final int VERSION_MINOR = 3;
+	public static final int VERSION_MINOR = 4;
+	public static final int VERSION_PATCH = 0;
 	private Path baseDirSrc, baseDirDst;
 	private Action action;
 	private boolean beVerbose;
@@ -601,46 +602,73 @@ public class SynchronizeDirWithVcsWorkingCopy
 		}
 		else
 		{
-			String nextArg = listArgs.poll();
-			while (nextArg != null && nextArg.startsWith("-") && !nextArg.equals("-"))
+			boolean stopOptions = false;
+			boolean baseDirSrcInitialized = false;
+			boolean baseDirDstInitialized = false;
+			for (String nextArg = listArgs.poll(); nextArg != null; nextArg = listArgs.poll())
 			{
-				switch (nextArg)
+				if (nextArg.equals("--"))
 				{
-					case "-d", "--dry-run" -> action = Action.DRY_RUN;
-					case "-g", "--git" -> action = Action.GIT;
-					case "-h", "--help" -> action = Action.SHOW_HELP;
-					case "-s", "--svn" -> action = Action.SVN;
-					case "-v", "--verbose" -> beVerbose = true;
-					case "-V", "--version" ->
+					stopOptions = true;
+				}
+				else if (!stopOptions && nextArg.startsWith("--"))
+				{
+					switch (nextArg.substring(2))
 					{
-						System.out.format("Version %d.%d%n", VERSION_MAJOR, VERSION_MINOR);
-						System.exit(0);
-					}
-					default ->
-					{
-						action = null;
-						return;
+						case "dry-run" -> action = Action.DRY_RUN;
+						case "git" -> action = Action.GIT;
+						case "help" -> action = Action.SHOW_HELP;
+						case "svn" -> action = Action.SVN;
+						case "verbose" -> beVerbose = true;
+						case "version" -> showVersion();
+						default -> action = null;
 					}
 				}
-				nextArg = listArgs.poll();
-			}
-			if ("-".equals(nextArg) && !listArgs.isEmpty())
-			{
-				nextArg = listArgs.poll();
-			}
-			if (nextArg != null && listArgs.size() <= 1)
-			{
-				final Path path1 = Paths.get(nextArg);
-				baseDirSrc = Files.isDirectory(path1) ? path1.toAbsolutePath().normalize() : null;
-				nextArg = listArgs.poll();
-				if (nextArg != null)
+				else if (!stopOptions && nextArg.startsWith("-"))
 				{
-					final Path path2 = Paths.get(nextArg);
-					baseDirDst = Files.isDirectory(path2) ? path2.toAbsolutePath().normalize() : null;
+					nextArg.substring(1).chars().forEach(c ->
+					{
+						switch (c)
+						{
+							case 'd' -> action = Action.DRY_RUN;
+							case 'g' -> action = Action.GIT;
+							case 'h' -> action = Action.SHOW_HELP;
+							case 's' -> action = Action.SVN;
+							case 'v' -> beVerbose = true;
+							case 'V' -> showVersion();
+							default -> action = null;
+						}
+					});
 				}
-				validPaths = baseDirSrc != null && baseDirDst != null;
+				else
+				{
+					if (!baseDirSrcInitialized)
+					{
+						final Path path1 = Paths.get(nextArg);
+						baseDirSrc = Files.isDirectory(path1) ? path1.toAbsolutePath().normalize() : null;
+						baseDirSrcInitialized = true;
+					}
+					else if (!baseDirDstInitialized)
+					{
+						final Path path2 = Paths.get(nextArg);
+						baseDirDst = Files.isDirectory(path2) ? path2.toAbsolutePath().normalize() : null;
+						baseDirDstInitialized = true;
+					}
+					else
+					{
+						baseDirSrc = null;
+						baseDirDst = null;
+					}
+				}
 			}
+			validPaths = baseDirSrc != null && baseDirDst != null;
 		}
+	}
+
+	private static void showVersion()
+	{
+		System.out.format("Version %d.%d.%d%n", VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH);
+		System.exit(0);
 	}
 
 	private static void showUsage()
@@ -656,7 +684,7 @@ public class SynchronizeDirWithVcsWorkingCopy
 			"",
 			"        -h | --help             : show this help",
 			"        -V | --version          : show version and exit",
-			"        -                       : stop parsing options",
+			"        --                      : stop parsing options",
 			"        <source-directory>      : new content",
 			"        <destination-directory> : existing VCS working copy"
 		)
