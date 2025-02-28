@@ -29,10 +29,8 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Queue;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -52,7 +50,7 @@ import static java.util.function.Predicate.not;
 public class SynchronizeDirWithVcsWorkingCopy
 {
 	public static final int VERSION_MAJOR = 1;
-	public static final int VERSION_MINOR = 4;
+	public static final int VERSION_MINOR = 5;
 	public static final int VERSION_PATCH = 0;
 	private Path baseDirSrc, baseDirDst;
 	private Action action;
@@ -591,10 +589,10 @@ public class SynchronizeDirWithVcsWorkingCopy
 
 	private SynchronizeDirWithVcsWorkingCopy(String... args)
 	{
-		parseArgs(new LinkedList<>(args != null ? List.of(args) : List.of()));
+		parseArgs(args != null ? List.of(args) : List.of());
 	}
 
-	private void parseArgs(Queue<String> listArgs)
+	private void parseArgs(List<String> listArgs)
 	{
 		if (listArgs.isEmpty())
 		{
@@ -605,7 +603,7 @@ public class SynchronizeDirWithVcsWorkingCopy
 			boolean stopOptions = false;
 			boolean baseDirSrcInitialized = false;
 			boolean baseDirDstInitialized = false;
-			for (String nextArg = listArgs.poll(); nextArg != null; nextArg = listArgs.poll())
+			for (String nextArg : listArgs)
 			{
 				if (nextArg.equals("--"))
 				{
